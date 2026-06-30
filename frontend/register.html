@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký | CourseHub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i> CourseHub
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Trang chủ</a>
+                <a href="index.html#courses">Khóa học</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Container -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>Đăng ký tài khoản</h2>
+                <p>Tham gia CourseHub để bắt đầu học tập</p>
+            </div>
+            
+            <div id="error-message" style="display: none; color: var(--danger-color); margin-bottom: 15px; text-align: center;"></div>
+            
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="name">Họ và tên</label>
+                    <input type="text" id="name" class="form-control" required placeholder="Nhập họ và tên">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" required placeholder="Nhập email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" class="form-control" required minlength="6" placeholder="Mật khẩu ít nhất 6 ký tự">
+                </div>
+                <button type="submit" class="btn btn-primary" id="register-btn">Đăng ký</button>
+            </form>
+            
+            <p class="text-center" style="margin-top: 20px;">
+                Đã có tài khoản? <a href="login.html" class="text-primary">Đăng nhập ngay</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const errorDiv = document.getElementById('error-message');
+            const registerBtn = document.getElementById('register-btn');
+            
+            errorDiv.style.display = 'none';
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'Đang xử lý...';
+            
+            try {
+                const data = await apiFetch('/auth/register', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, email, password, role: 'user' }) // Mặc định role là user
+                });
+                
+                // Lưu token và user info
+                TokenService.setToken(data.token);
+                TokenService.setUser(data.user);
+                
+                // Chuyển hướng về trang chủ
+                window.location.href = 'index.html';
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Đăng ký';
+            }
+        });
+    </script>
+</body>
+</html>

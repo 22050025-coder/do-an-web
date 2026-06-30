@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Bài học | CourseHub Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f1f5f9; margin: 0; font-family: 'Inter', sans-serif; }
+        .main-content { padding: 40px; max-width: 1000px; margin: 0 auto; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .btn-back { background: white; color: #0f172a; border: 1px solid #cbd5e1; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        
+        .card { background: white; border-radius: 20px; padding: 35px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.02); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #475569; }
+        .form-control { width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; font-family: 'Inter'; box-sizing: border-box; }
+        
+        .lesson-list { margin-top: 40px; }
+        .lesson-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-start; }
+        .lesson-item h4 { margin: 0 0 10px 0; color: #1e293b; font-size: 1.1rem; }
+        .lesson-item p { margin: 0; color: #64748b; font-size: 0.95rem; }
+        .badge { background: #e0e7ff; color: #4f46e5; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="topbar">
+            <div>
+                <a href="admin.html" class="btn-back"><i class="fas fa-arrow-left"></i> Quay lại Dashboard</a>
+                <h2 style="font-family: 'Outfit'; margin: 20px 0 5px 0; color: #0f172a; font-size: 2rem;">Quản lý Bài học</h2>
+                <p style="color: #64748b; margin: 0;" id="course-title-display">Khóa học: Đang tải...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top: 0; font-family: 'Outfit'; font-size: 1.4rem;">Thêm bài học mới</h3>
+            <form id="lesson-form">
+                <div class="form-group">
+                    <label>Tiêu đề bài học</label>
+                    <input type="text" id="title" class="form-control" placeholder="Vd: Bài 1: Cài đặt môi trường" required>
+                </div>
+                <div class="form-group">
+                    <label>Link Video (Youtube / MP4)</label>
+                    <input type="url" id="videoUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+                <div class="form-group">
+                    <label>Nội dung chi tiết / Tài liệu</label>
+                    <textarea id="content" class="form-control" rows="5" required placeholder="Nhập tài liệu đọc, ghi chú, bài tập..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="border-radius: 10px; padding: 12px 25px;"><i class="fas fa-plus"></i> Đăng tải bài học</button>
+            </form>
+            <div id="form-msg" style="margin-top: 15px;"></div>
+        </div>
+
+        <div class="lesson-list">
+            <h3 style="font-family: 'Outfit'; font-size: 1.4rem; margin-bottom: 20px;">Danh sách các bài học hiện tại</h3>
+            <div id="lessons-container">
+                <p style="text-align: center; color: #94a3b8;">Đang tải dữ liệu...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('courseId');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = TokenService.getUser();
+            if (!user || user.role !== 'admin') {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            if (!courseId) {
+                alert('Không tìm thấy ID khóa học!');
+                window.location.href = 'admin.html';
+                return;
+            }
+
+            // Tải thông tin khóa học
+            try {
+                const courseData = await apiFetch(`/courses/${courseId}`);
+                document.getElementById('course-title-display').textContent = 'Khóa học: ' + courseData.data.title;
+            } catch (err) {
+                document.getElementById('course-title-display').textContent = 'Khóa học: Không tìm thấy';
+            }
+
+            loadLessons();
+        });
+
+        async function loadLessons() {
+            const container = document.getElementById('lessons-container');
+            try {
+                const data = await apiFetch(`/courses/${courseId}/lessons`);
+                container.innerHTML = '';
+
+                if (data.data.length === 0) {
+                    container.innerHTML = '<div class="lesson-item" style="justify-content: center; color: #64748b;">Khóa học này chưa có bài học nào.</div>';
+                    return;
+                }
+
+                data.data.forEach((lesson, index) => {
+                    const videoTag = lesson.videoUrl ? `<span class="badge"><i class="fas fa-video"></i> Có Video</span>` : '';
+                    container.innerHTML += `
+                        <div class="lesson-item">
+                            <div>
+                                <h4>Bài ${index + 1}: ${lesson.title} ${videoTag}</h4>
+                                <p>${lesson.content.substring(0, 100)}${lesson.content.length > 100 ? '...' : ''}</p>
+                            </div>
+                            <button class="btn btn-outline" style="background: white; border: 1px solid #ef4444; color: #ef4444; border-radius: 8px; padding: 6px 12px;"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                container.innerHTML = `<p style="color: red;">Lỗi: ${error.message}</p>`;
+            }
+        }
+
+        document.getElementById('lesson-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('form-msg');
+            msg.innerHTML = 'Đang xử lý...';
+            
+            try {
+                await apiFetch(`/courses/${courseId}/lessons`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        title: document.getElementById('title').value,
+                        videoUrl: document.getElementById('videoUrl').value,
+                        content: document.getElementById('content').value
+                    })
+                });
+                
+                msg.innerHTML = '<span style="color: #10b981; font-weight: 600;"><i class="fas fa-check-circle"></i> Thêm bài học thành công!</span>';
+                document.getElementById('lesson-form').reset();
+                loadLessons();
+            } catch (error) {
+                msg.innerHTML = `<span style="color: #ef4444; font-weight: 600;"><i class="fas fa-exclamation-circle"></i> ${error.message}</span>`;
+            }
+        });
+    </script>
+</body>
+</html>

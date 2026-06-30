@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống quản lý khóa học | CourseHub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i> CourseHub
+            </a>
+            <div class="nav-links">
+                <a href="#home" class="active">Trang chủ</a>
+                <a href="#courses">Khóa học</a>
+                <a href="#about">Về chúng tôi</a>
+            </div>
+            <div class="nav-auth" id="nav-auth">
+                <!-- Sẽ được render bằng JS dựa vào trạng thái đăng nhập -->
+                <a href="login.html" class="btn btn-outline">Đăng nhập</a>
+                <a href="register.html" class="btn btn-primary">Đăng ký</a>
+            </div>
+            <button class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero" id="home">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1>Nâng tầm kỹ năng của bạn với CourseHub</h1>
+                <p>Khám phá hàng trăm khóa học chất lượng cao từ các chuyên gia hàng đầu. Bắt đầu hành trình học tập của bạn ngay hôm nay!</p>
+                <div class="hero-buttons">
+                    <a href="#courses" class="btn btn-primary btn-lg">Khám phá ngay</a>
+                    <a href="register.html" class="btn btn-outline btn-lg">Tham gia miễn phí</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="glass-card">
+                    <div class="glass-card-header">
+                        <i class="fas fa-code text-primary"></i>
+                        <span>Web Development</span>
+                    </div>
+                    <div class="glass-card-body">
+                        <h3>Lập trình Web Full-Stack 2026</h3>
+                        <p>Từ số không đến Full-Stack Developer trong 6 tháng.</p>
+                        <div class="progress-bar"><div class="progress" style="width: 75%"></div></div>
+                        <span class="progress-text">75% hoàn thành</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Courses Section -->
+    <section class="section courses-section" id="courses">
+        <div class="container">
+            <div class="section-header">
+                <h2>Khóa học nổi bật</h2>
+                <p>Những khóa học được đánh giá cao nhất bởi cộng đồng học viên.</p>
+            </div>
+            <div class="course-grid" id="course-grid">
+                <!-- Danh sách khóa học sẽ được tải bằng JS -->
+                <div class="course-skeleton"></div>
+                <div class="course-skeleton"></div>
+                <div class="course-skeleton"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-col">
+                <h3>CourseHub</h3>
+                <p>Nền tảng học tập trực tuyến hàng đầu Việt Nam.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Liên kết</h4>
+                <a href="#">Trang chủ</a>
+                <a href="#">Khóa học</a>
+                <a href="#">Về chúng tôi</a>
+            </div>
+            <div class="footer-col">
+                <h4>Hỗ trợ</h4>
+                <a href="#">FAQ</a>
+                <a href="#">Chính sách bảo mật</a>
+                <a href="#">Điều khoản</a>
+            </div>
+            <div class="footer-col">
+                <h4>Theo dõi chúng tôi</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 CourseHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/config.js?v=2"></script>
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/app.js?v=2"></script>
+</body>
+</html>

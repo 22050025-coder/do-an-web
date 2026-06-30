@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị | CourseHub Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Dashboard specific CSS */
+        body { background-color: #f1f5f9; margin: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .dashboard { display: flex; min-height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar { width: 280px; background-color: #0f172a; color: white; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
+        .sidebar-logo { padding: 30px; font-size: 1.8rem; font-family: 'Outfit', sans-serif; font-weight: 800; color: white; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-logo i { color: #6366f1; font-size: 2rem; }
+        .sidebar-menu { padding: 25px 20px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        
+        .menu-item { padding: 16px 20px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #94a3b8; font-weight: 600; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .menu-item:hover { background-color: rgba(255,255,255,0.05); color: white; transform: translateX(5px); }
+        .menu-item.active { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); transform: translateX(5px); }
+        .menu-item i { width: 24px; text-align: center; font-size: 1.2rem; }
+        
+        /* Main Content */
+        .main-content { flex: 1; margin-left: 280px; display: flex; flex-direction: column; background-color: #f8fafc; min-height: 100vh; }
+        .topbar { height: 90px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); padding: 0 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 90; }
+        
+        .content-area { padding: 40px; flex: 1; }
+        
+        .card { background: white; border-radius: 20px; padding: 35px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.02); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        
+        table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        th, td { padding: 18px 20px; text-align: left; border-bottom: 1px solid #f1f5f9; }
+        th { color: #64748b; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; background: #f8fafc; }
+        th:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        th:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+        tr:hover td { background-color: #f8fafc; }
+        
+        /* Logout in topbar */
+        .topbar-user { display: flex; align-items: center; gap: 20px; }
+        .btn-logout { background: #fee2e2; color: #ef4444; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-family: 'Inter'; transition: all 0.3s; }
+        .btn-logout:hover { background: #fecaca; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-graduation-cap"></i> CourseHub
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" id="menu-courses" onclick="switchTab('courses')">
+                    <i class="fas fa-book-open"></i> Quản lý Khóa học
+                </div>
+                <div class="menu-item" id="menu-enrollments" onclick="switchTab('enrollments')">
+                    <i class="fas fa-users"></i> Lịch sử Ghi danh
+                </div>
+                <div class="menu-item" id="menu-transactions" onclick="switchTab('transactions')">
+                    <i class="fas fa-wallet"></i> Quản lý Nạp tiền
+                </div>
+                <div style="margin-top: auto;"></div>
+                <div class="menu-item" onclick="window.location.href='index.html'" style="color: #8b5cf6; background: rgba(139, 92, 246, 0.1);">
+                    <i class="fas fa-external-link-alt"></i> Xem Website
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="topbar">
+                <h2 style="font-family: 'Outfit'; margin: 0; color: #0f172a; font-size: 1.8rem;" id="page-title">Quản lý Khóa học</h2>
+                <div class="topbar-user">
+                    <div style="text-align: right;">
+                        <span id="admin-name" style="font-weight: 700; color: #1e293b; display: block;">Admin</span>
+                        <span style="color: #64748b; font-size: 0.85rem;">Super Administrator</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <!-- Section Courses -->
+                <div class="card" id="section-courses">
+                    <div class="card-header">
+                        <h3 style="margin: 0; font-family: 'Outfit'; font-size: 1.5rem;">Danh sách Khóa học</h3>
+                        <button class="btn btn-primary" style="border-radius: 10px;" onclick="toggleForm()"><i class="fas fa-plus"></i> Thêm khóa học mới</button>
+                    </div>
+
+                    <div id="add-form" style="display: none; background: #f8fafc; padding: 30px; border-radius: 16px; margin-bottom: 30px; border: 1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                        <h4 style="margin-top: 0; margin-bottom: 25px; font-family: 'Outfit'; font-size: 1.2rem; color: #334155;">Thông tin Khóa học</h4>
+                        <form id="course-form">
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #475569;">Tiêu đề khóa học</label>
+                                <input type="text" id="title" class="form-control" style="width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; font-family: 'Inter';" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #475569;">Mô tả chi tiết</label>
+                                <textarea id="desc" class="form-control" rows="4" style="width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; font-family: 'Inter';" required></textarea>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 25px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #475569;">Giá bán (VNĐ)</label>
+                                <input type="number" id="price" class="form-control" style="width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; font-family: 'Inter';" required>
+                            </div>
+                            <div style="display: flex; gap: 15px;">
+                                <button type="submit" class="btn btn-primary" style="border-radius: 10px;">Lưu khóa học</button>
+                                <button type="button" class="btn btn-outline" style="border-radius: 10px; background: white;" onclick="toggleForm()">Hủy bỏ</button>
+                            </div>
+                        </form>
+                        <div id="form-msg" style="margin-top: 15px;"></div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tên Khóa Học</th>
+                                <th>Giá Bán</th>
+                                <th>Trạng Thái</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="course-list">
+                            <tr><td colspan="4" style="text-align: center; padding: 40px; color: #94a3b8;">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Section Enrollments -->
+                <div class="card" id="section-enrollments" style="display: none;">
+                    <div class="card-header">
+                        <div>
+                            <h3 style="margin: 0; font-family: 'Outfit'; font-size: 1.5rem;">Thống kê Ghi danh</h3>
+                            <p style="color: #64748b; margin-top: 8px; font-size: 0.95rem;">Theo dõi danh sách học viên đăng ký trên toàn bộ nền tảng.</p>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Thông tin Học viên</th>
+                                <th>Khóa học đăng ký</th>
+                                <th>Ngày đăng ký</th>
+                            </tr>
+                        </thead>
+                        <tbody id="enrollment-list">
+                            <tr><td colspan="3" style="text-align: center; padding: 40px; color: #94a3b8;">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Section Transactions -->
+                <div class="card" id="section-transactions" style="display: none;">
+                    <div class="card-header">
+                        <div>
+                            <h3 style="margin: 0; font-family: 'Outfit'; font-size: 1.5rem;">Quản lý Nạp tiền</h3>
+                            <p style="color: #64748b; margin-top: 8px; font-size: 0.95rem;">Duyệt hoặc từ chối các yêu cầu nạp tiền vào ví của học viên.</p>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Học viên</th>
+                                <th>Số tiền</th>
+                                <th>Nội dung</th>
+                                <th>Ngày yêu cầu</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transaction-list">
+                            <tr><td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = TokenService.getUser();
+            if (!user || user.role !== 'admin') {
+                alert('Bạn không có quyền truy cập trang Quản trị!');
+                window.location.href = 'index.html';
+                return;
+            }
+            document.getElementById('admin-name').textContent = user.name;
+            loadAdminCourses();
+            loadAdminEnrollments();
+            loadAdminTransactions();
+        });
+
+        function logout() {
+            TokenService.removeToken();
+            window.location.href = 'login.html';
+        }
+
+        function switchTab(tab) {
+            document.getElementById('section-courses').style.display = 'none';
+            document.getElementById('section-enrollments').style.display = 'none';
+            document.getElementById('section-transactions').style.display = 'none';
+            
+            document.getElementById('menu-courses').classList.remove('active');
+            document.getElementById('menu-enrollments').classList.remove('active');
+            document.getElementById('menu-transactions').classList.remove('active');
+
+            document.getElementById('section-' + tab).style.display = 'block';
+            document.getElementById('menu-' + tab).classList.add('active');
+
+            let title = 'Quản lý Khóa học';
+            if (tab === 'enrollments') title = 'Lịch sử Ghi danh';
+            if (tab === 'transactions') title = 'Quản lý Nạp tiền';
+            document.getElementById('page-title').textContent = title;
+        }
+
+        function toggleForm() {
+            const form = document.getElementById('add-form');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function loadAdminCourses() {
+            try {
+                const data = await apiFetch('/courses');
+                const tbody = document.getElementById('course-list');
+                tbody.innerHTML = '';
+                
+                data.data.forEach(course => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong style="color: #1e293b; font-size: 1.05rem;">${course.title}</strong></td>
+                            <td style="color: #6366f1; font-weight: 700; font-size: 1.1rem;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(course.price)}</td>
+                            <td><span style="background: #dcfce7; color: #166534; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">Đang mở</span></td>
+                            <td><a href="admin-lessons?courseId=${course._id}" class="btn btn-primary" style="padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; text-decoration: none;"><i class="fas fa-list"></i> Quản lý Bài học</a></td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadAdminEnrollments() {
+            try {
+                const data = await apiFetch('/enrollments/all');
+                const tbody = document.getElementById('enrollment-list');
+                tbody.innerHTML = '';
+                
+                if(data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 40px; color: #94a3b8;">Chưa có lượt đăng ký nào.</td></tr>';
+                    return;
+                }
+
+                data.data.forEach(en => {
+                    const userName = en.user ? en.user.name : 'Người dùng ẩn';
+                    const userEmail = en.user ? en.user.email : 'N/A';
+                    const courseTitle = en.course ? en.course.title : 'Khóa học đã xóa';
+                    const date = new Date(en.createdAt).toLocaleDateString('vi-VN');
+                    
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>
+                                <strong style="color: #1e293b; font-size: 1.05rem;">${userName}</strong><br>
+                                <span style="color: #64748b; font-size: 0.9rem; display: inline-block; margin-top: 4px;"><i class="fas fa-envelope" style="margin-right: 5px; opacity: 0.7;"></i>${userEmail}</span>
+                            </td>
+                            <td><span style="color: #4f46e5; font-weight: 600; background: #e0e7ff; padding: 6px 12px; border-radius: 8px;">${courseTitle}</span></td>
+                            <td><span style="font-weight: 500; color: #475569;">${date}</span></td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error(error);
+                document.getElementById('enrollment-list').innerHTML = '<tr><td colspan="3" style="text-align: center; color: #ef4444; padding: 40px;">Lỗi tải dữ liệu</td></tr>';
+            }
+        }
+
+        async function loadAdminTransactions() {
+            try {
+                const data = await apiFetch('/transactions/admin');
+                const tbody = document.getElementById('transaction-list');
+                tbody.innerHTML = '';
+                
+                if(data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;">Không có yêu cầu nạp tiền nào.</td></tr>';
+                    return;
+                }
+
+                data.data.forEach(tx => {
+                    const userName = tx.user ? tx.user.name : 'Ẩn danh';
+                    const userEmail = tx.user ? tx.user.email : 'N/A';
+                    const date = new Date(tx.createdAt).toLocaleDateString('vi-VN');
+                    const amount = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tx.amount);
+                    
+                    let statusHtml = '';
+                    let actionHtml = '';
+                    if (tx.status === 'pending') {
+                        statusHtml = '<span style="background: #fef08a; color: #854d0e; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">Chờ duyệt</span>';
+                        actionHtml = `
+                            <button onclick="updateTx('${tx._id}', 'completed')" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem; margin-right: 5px; border-radius: 6px;">Duyệt</button>
+                            <button onclick="updateTx('${tx._id}', 'rejected')" class="btn btn-logout" style="padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; background: #fee2e2; color: #ef4444;">Từ chối</button>
+                        `;
+                    } else if (tx.status === 'completed') {
+                        statusHtml = '<span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">Thành công</span>';
+                        actionHtml = '-';
+                    } else {
+                        statusHtml = '<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">Đã hủy</span>';
+                        actionHtml = '-';
+                    }
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>
+                                <strong>${userName}</strong><br>
+                                <span style="color: #64748b; font-size: 0.85rem;">${userEmail}</span>
+                            </td>
+                            <td><strong style="color: #059669;">+${amount}</strong></td>
+                            <td>${tx.description || ''}</td>
+                            <td>${date}</td>
+                            <td>${statusHtml}</td>
+                            <td>${actionHtml}</td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error(error);
+                document.getElementById('transaction-list').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 40px;">Lỗi tải dữ liệu</td></tr>';
+            }
+        }
+
+        async function updateTx(id, status) {
+            if(!confirm(status === 'completed' ? 'Bạn chắc chắn muốn DUYỆT nạp tiền và cộng tiền cho học viên này?' : 'Bạn muốn TỪ CHỐI nạp tiền?')) return;
+            try {
+                await apiFetch(`/transactions/admin/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status })
+                });
+                loadAdminTransactions();
+            } catch(error) {
+                alert('Lỗi: ' + error.message);
+            }
+        }
+
+        document.getElementById('course-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('form-msg');
+            msg.innerHTML = 'Đang xử lý...';
+            
+            try {
+                await apiFetch('/courses', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        title: document.getElementById('title').value,
+                        description: document.getElementById('desc').value,
+                        price: document.getElementById('price').value
+                    })
+                });
+                
+                msg.innerHTML = '<span style="color: #10b981; font-weight: 600;"><i class="fas fa-check-circle"></i> Thêm khóa học thành công!</span>';
+                document.getElementById('course-form').reset();
+                loadAdminCourses();
+                setTimeout(toggleForm, 1500);
+            } catch (error) {
+                msg.innerHTML = `<span style="color: #ef4444; font-weight: 600;"><i class="fas fa-exclamation-circle"></i> ${error.message}</span>`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phòng học | CourseHub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; font-family: 'Inter', sans-serif; }
+        .learn-layout { display: flex; height: 100vh; }
+        
+        /* Sidebar (Mục lục) */
+        .learn-sidebar { width: 350px; background: white; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .sidebar-header h2 { font-size: 1.2rem; margin: 0 0 10px 0; }
+        .sidebar-header .btn-back { font-size: 0.9rem; color: var(--gray-color); text-decoration: none; display: flex; align-items: center; gap: 5px; }
+        .lesson-list { flex: 1; overflow-y: auto; }
+        .lesson-item { padding: 15px 20px; border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; gap: 15px; transition: background 0.2s; }
+        .lesson-item:hover { background: var(--light-color); }
+        .lesson-item.active { background: #e0e7ff; border-left: 4px solid var(--primary-color); }
+        .lesson-idx { font-weight: 600; color: var(--gray-color); }
+        .lesson-title { flex: 1; font-weight: 500; font-size: 0.95rem; }
+        
+        /* Main Content (Khu vực học) */
+        .learn-main { flex: 1; display: flex; flex-direction: column; background: var(--light-color); overflow-y: auto; }
+        .video-container { width: 100%; background: black; aspect-ratio: 16/9; display: flex; justify-content: center; align-items: center; }
+        .video-container iframe { width: 100%; height: 100%; border: none; }
+        .content-container { padding: 40px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+        .content-container h1 { font-size: 1.8rem; margin-bottom: 20px; }
+        .lesson-text { font-size: 1.05rem; line-height: 1.8; color: #333; background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow-sm); }
+    </style>
+</head>
+<body>
+    <div class="learn-layout">
+        <div class="learn-sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="btn-back" id="back-link"><i class="fas fa-arrow-left"></i> Về trang tổng quan</a>
+                <h2 id="course-title" style="margin-top: 15px;">Đang tải...</h2>
+            </div>
+            <div class="lesson-list" id="lesson-list">
+                <div style="padding: 20px; text-align: center; color: var(--gray-color);">Đang tải danh sách bài học...</div>
+            </div>
+        </div>
+        
+        <div class="learn-main">
+            <div class="video-container" id="video-container" style="display: none;">
+                <!-- Video iframe sẽ chèn vào đây -->
+            </div>
+            <div class="content-container">
+                <h1 id="lesson-title">Vui lòng chọn một bài học bên trái</h1>
+                <div class="lesson-text" id="lesson-content">
+                    Bắt đầu hành trình học tập của bạn.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('courseId');
+        let currentLessons = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = TokenService.getUser();
+            if (!user) {
+                alert('Vui lòng đăng nhập để học.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            if (!courseId) {
+                alert('Lỗi: Không tìm thấy ID khóa học.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            document.getElementById('back-link').href = `course.html?id=${courseId}`;
+
+            try {
+                // Kiểm tra xem đã đăng ký chưa
+                const enrollData = await apiFetch(`/courses/${courseId}/enroll`);
+                if (!enrollData.isEnrolled && user.role !== 'admin') { // Admin vẫn được xem
+                    alert('Bạn chưa đăng ký khóa học này!');
+                    window.location.href = `course.html?id=${courseId}`;
+                    return;
+                }
+
+                // Tải thông tin khóa học
+                const courseData = await apiFetch(`/courses/${courseId}`);
+                document.getElementById('course-title').textContent = courseData.data.title;
+
+                // Tải danh sách bài học
+                const lessonsData = await apiFetch(`/courses/${courseId}/lessons`);
+                currentLessons = lessonsData.data;
+                
+                renderLessonList();
+                
+                if (currentLessons.length > 0) {
+                    selectLesson(0);
+                } else {
+                    document.getElementById('lesson-list').innerHTML = '<div style="padding: 20px; text-align: center; color: var(--gray-color);">Khóa học này chưa có nội dung.</div>';
+                }
+
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        function renderLessonList() {
+            const list = document.getElementById('lesson-list');
+            list.innerHTML = '';
+            
+            currentLessons.forEach((lesson, index) => {
+                const icon = lesson.videoUrl ? '<i class="fas fa-play-circle" style="color: var(--primary-color);"></i>' : '<i class="fas fa-file-alt" style="color: var(--gray-color);"></i>';
+                list.innerHTML += `
+                    <div class="lesson-item" id="lesson-item-${index}" onclick="selectLesson(${index})">
+                        <div class="lesson-idx">${index + 1}.</div>
+                        <div class="lesson-title">${lesson.title}</div>
+                        <div>${icon}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // Hàm chuyển đổi link Youtube thường thành link nhúng (embed)
+        function getYoutubeEmbedUrl(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            if (match && match[2].length === 11) {
+                return `https://www.youtube.com/embed/${match[2]}`;
+            }
+            return url;
+        }
+
+        async function selectLesson(index) {
+            // Xóa class active
+            document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`lesson-item-${index}`).classList.add('active');
+
+            const lesson = currentLessons[index];
+            
+            // Lấy chi tiết bài học từ server
+            try {
+                const data = await apiFetch(`/lessons/${lesson._id}`);
+                const fullLesson = data.data;
+
+                document.getElementById('lesson-title').textContent = `Bài ${index + 1}: ${fullLesson.title}`;
+                
+                // Xử lý text để có xuống dòng
+                const formattedContent = fullLesson.content.replace(/\n/g, '<br>');
+                document.getElementById('lesson-content').innerHTML = formattedContent;
+
+                const videoContainer = document.getElementById('video-container');
+                if (fullLesson.videoUrl) {
+                    videoContainer.style.display = 'flex';
+                    const embedUrl = getYoutubeEmbedUrl(fullLesson.videoUrl);
+                    videoContainer.innerHTML = `<iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                } else {
+                    videoContainer.style.display = 'none';
+                    videoContainer.innerHTML = '';
+                }
+            } catch(error) {
+                console.error(error);
+                alert("Lỗi khi tải nội dung bài học.");
+            }
+        }
+    </script>
+</body>
+</html>
