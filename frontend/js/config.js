@@ -1,6 +1,12 @@
-// Cấu hình API URL
+// Nhận diện xem web đang chạy ở máy tính (Local) hay trên mạng (Cloud)
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+// URL Backend từ Render (đã tự động lấy từ hình ảnh của bạn)
+const CLOUD_API_URL = 'https://do-an-web-jbza.onrender.com/api'; 
+
+// Cấu hình API URL tự động đảo nguồn
 const CONFIG = {
-    API_URL: 'http://localhost:5000/api', // Khi deploy lên Render sẽ đổi thành URL thật
+    API_URL: isLocalhost ? 'http://localhost:5000/api' : CLOUD_API_URL,
 };
 
 // Lưu và lấy token từ LocalStorage
