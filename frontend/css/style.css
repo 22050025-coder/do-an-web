@@ -385,3 +385,57 @@ a {
     padding: 80px 0 30px;
 }
 .footer-col h3 { color: white; }
+
+/* Thêm vào Premium Design */
+.course-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #ef4444, #f97316);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    z-index: 10;
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.course-badge.new {
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+}
+
+.course-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.course-rating i {
+    color: #f59e0b;
+}
+
+.course-rating span {
+    color: var(--gray-color);
+    font-weight: 500;
+}
+
+.course-img {
+    transition: transform 0.5s ease;
+}
+
+.course-card:hover .course-img {
+    transform: scale(1.05);
+}
+
+.course-img-wrapper {
+    overflow: hidden;
+    position: relative;
+    border-radius: 20px 20px 0 0;
+}
+

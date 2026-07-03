@@ -22,11 +22,31 @@ async function loadCourses() {
             
             const courseCard = document.createElement('div');
             courseCard.className = 'course-card';
+            
+            // Random rating between 4.5 and 5.0
+            const randomRating = (Math.random() * 0.5 + 4.5).toFixed(1);
+            const randomReviews = Math.floor(Math.random() * 500) + 50;
+            
+            // Random badge
+            const badges = ['<div class="course-badge">🔥 Hot</div>', '<div class="course-badge new">🚀 Mới</div>', ''];
+            const randomBadge = badges[Math.floor(Math.random() * badges.length)];
+
             courseCard.innerHTML = `
-                <div class="course-img" style="background-image: url('${imageUrl}')"></div>
+                <div class="course-img-wrapper">
+                    ${randomBadge}
+                    <div class="course-img" style="background-image: url('${imageUrl}')"></div>
+                </div>
                 <div class="course-content">
                     <h3 class="course-title">${course.title}</h3>
                     <p class="course-desc">Giảng viên: ${instructorName}</p>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span>${randomRating} (${randomReviews} đánh giá)</span>
+                    </div>
                     <div class="course-footer">
                         <span class="course-price">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(course.price)}</span>
                         <a href="course?id=${course._id}" class="btn btn-primary" style="padding: 8px 15px;">Chi tiết</a>
