@@ -67,6 +67,12 @@ export const enrollCourse = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Không tìm thấy khóa học' });
     }
 
+    // Quản trị viên (Admin) được tự động cấp quyền truy cập miễn phí
+    if (req.user.role === 'admin') {
+      const enrollment = await Enrollment.create({ user: userId, course: courseId });
+      return res.status(201).json({ success: true, message: 'Admin đã lấy khóa học miễn phí', data: enrollment });
+    }
+
     // Kiểm tra đã đăng ký chưa
     const existingEnrollment = await Enrollment.findOne({ user: userId, course: courseId });
     if (existingEnrollment) {
@@ -109,6 +115,11 @@ export const enrollCourse = async (req, res) => {
 // @access  Private
 export const checkEnrollment = async (req, res) => {
   try {
+    // Quản trị viên (Admin) được đặc quyền truy cập tất cả khóa học miễn phí
+    if (req.user.role === 'admin') {
+      return res.status(200).json({ success: true, isEnrolled: true, message: 'Đặc quyền Admin' });
+    }
+
     const enrollment = await Enrollment.findOne({ user: req.user.id, course: req.params.id });
     if (enrollment) {
       return res.status(200).json({ success: true, isEnrolled: true, data: enrollment });
