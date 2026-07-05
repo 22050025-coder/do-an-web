@@ -133,9 +133,10 @@
                 if (TokenService.getUser()) {
                     const enrollData = await apiFetch(`/courses/${courseId}/enroll`);
                     if (enrollData.isEnrolled) {
+                        document.getElementById('course-price').textContent = '0 đ';
                         const btn = document.getElementById('enroll-btn');
                         btn.textContent = 'Vào học ngay';
-                        btn.onclick = () => { window.location.href = `learn?courseId=${courseId}`; };
+                        btn.onclick = () => { window.location.href = `learn.html?courseId=${courseId}`; };
                         // Hủy sự kiện click cũ bằng cách thay thế node (vì onclick ở trên sẽ ghi đè không hoàn toàn nếu event listener tồn tại)
                         const newBtn = btn.cloneNode(true);
                         btn.parentNode.replaceChild(newBtn, btn);
@@ -165,10 +166,11 @@
 
                 try {
                     await apiFetch(`/courses/${courseId}/enroll`, { method: 'POST' });
+                    document.getElementById('course-price').textContent = '0 đ';
                     msg.innerHTML = '<span style="color: var(--secondary-color)">Mua khóa học thành công!</span>';
                     btn.textContent = 'Vào học ngay';
                     btn.disabled = false;
-                    btn.onclick = () => { window.location.href = `learn?courseId=${courseId}`; };
+                    btn.onclick = () => { window.location.href = `learn.html?courseId=${courseId}`; };
                 } catch (error) {
                     msg.innerHTML = `<span style="color: var(--danger-color)">${error.message}</span>`;
                     btn.disabled = false;
