@@ -23,9 +23,19 @@ async function loadCourses() {
             const courseCard = document.createElement('div');
             courseCard.className = 'course-card';
             
-            // Random rating between 4.5 and 5.0
-            const randomRating = (Math.random() * 0.5 + 4.5).toFixed(1);
-            const randomReviews = Math.floor(Math.random() * 500) + 50;
+            // Lấy rating thực tế
+            const realRating = course.averageRating ? course.averageRating.toFixed(1) : "5.0";
+            const reviewCount = course.reviewCount || 0;
+            
+            // Vẽ số sao (Ví dụ đơn giản: 5 sao tĩnh nếu > 4.5, hoặc có thể vẽ linh động)
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.round(course.averageRating || 5)) {
+                    starsHtml += '<i class="fas fa-star"></i>';
+                } else {
+                    starsHtml += '<i class="fas fa-star" style="color: var(--border-color);"></i>';
+                }
+            }
             
             // Random badge
             const badges = ['<div class="course-badge">🔥 Hot</div>', '<div class="course-badge new">🚀 Mới</div>', ''];
@@ -40,12 +50,8 @@ async function loadCourses() {
                     <h3 class="course-title">${course.title}</h3>
                     <p class="course-desc">Giảng viên: ${instructorName}</p>
                     <div class="course-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                        <span>${randomRating} (${randomReviews} đánh giá)</span>
+                        ${starsHtml}
+                        <span>${realRating} (${reviewCount} đánh giá)</span>
                     </div>
                     <div class="course-footer">
                         <span class="course-price">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(course.price)}</span>

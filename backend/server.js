@@ -10,6 +10,7 @@ import users from './routes/users.js';
 import enrollments from './routes/enrollments.js';
 import lessonRouter from './routes/lessons.js';
 import transactionRouter from './routes/transactions.js';
+import reviewRouter from './routes/reviews.js';
 dotenv.config();
 
 // Connect to database
@@ -28,6 +29,7 @@ app.use('/api/users', users);
 app.use('/api/enrollments', enrollments);
 app.use('/api/lessons', lessonRouter);
 app.use('/api/transactions', transactionRouter);
+app.use('/api/reviews', reviewRouter);
 
 // Basic Route
 app.get('/', (req, res) => {

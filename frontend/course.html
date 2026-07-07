@@ -70,6 +70,28 @@
             <div id="course-syllabus" style="background: white; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden;">
                 <div style="padding: 20px; text-align: center; color: var(--gray-color);">Đang tải danh sách bài học...</div>
             </div>
+
+            <h2 style="margin-top: 40px; margin-bottom: 20px;">Đánh giá khóa học</h2>
+            <div id="review-section" style="background: white; border-radius: 12px; padding: 25px; border: 1px solid var(--border-color);">
+                <div id="review-form-container" style="display: none; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px; font-size: 1.2rem;">Viết đánh giá của bạn</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;" id="star-rating">
+                        <i class="fas fa-star" data-rating="1" style="color: var(--border-color); cursor: pointer; font-size: 1.5rem;"></i>
+                        <i class="fas fa-star" data-rating="2" style="color: var(--border-color); cursor: pointer; font-size: 1.5rem;"></i>
+                        <i class="fas fa-star" data-rating="3" style="color: var(--border-color); cursor: pointer; font-size: 1.5rem;"></i>
+                        <i class="fas fa-star" data-rating="4" style="color: var(--border-color); cursor: pointer; font-size: 1.5rem;"></i>
+                        <i class="fas fa-star" data-rating="5" style="color: var(--border-color); cursor: pointer; font-size: 1.5rem;"></i>
+                    </div>
+                    <textarea id="review-comment" class="form-control" rows="3" placeholder="Chia sẻ cảm nhận của bạn về khóa học..."></textarea>
+                    <button id="submit-review-btn" class="btn btn-primary" style="margin-top: 15px;">Gửi đánh giá</button>
+                    <div id="review-msg" style="margin-top: 10px; font-size: 0.9rem;"></div>
+                </div>
+                
+                <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Bình luận của học viên</h3>
+                <div id="reviews-list">
+                    <div style="text-align: center; color: var(--gray-color);">Đang tải đánh giá...</div>
+                </div>
+            </div>
         </div>
         <div class="course-sidebar">
             <div class="enroll-card">
@@ -177,6 +199,80 @@
                     btn.textContent = 'Mua khóa học';
                 }
             });
+
+            // Tải danh sách đánh giá
+            let currentRating = 5;
+            const loadReviews = async () => {
+                try {
+                    const res = await apiFetch(`/reviews/${courseId}`);
+                    const reviewsList = document.getElementById('reviews-list');
+                    if (res.data.length === 0) {
+                        reviewsList.innerHTML = '<div style="text-align: center; color: var(--gray-color);">Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá khóa học này!</div>';
+                    } else {
+                        let html = '';
+                        res.data.forEach(r => {
+                            let stars = '';
+                            for (let i=1; i<=5; i++) {
+                                stars += `<i class="fas fa-star" style="color: ${i <= r.rating ? '#f59e0b' : 'var(--border-color)'};"></i>`;
+                            }
+                            html += `
+                                <div style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <strong style="color: var(--dark-color);">${r.user.name}</strong>
+                                        <div>${stars}</div>
+                                    </div>
+                                    <p style="color: var(--gray-color); line-height: 1.5; font-size: 0.95rem; margin: 0;">${r.comment}</p>
+                                </div>
+                            `;
+                        });
+                        reviewsList.innerHTML = html;
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            loadReviews();
+
+            // Hiển thị form đánh giá nếu đã đăng nhập
+            if (TokenService.getUser()) {
+                document.getElementById('review-form-container').style.display = 'block';
+                
+                // Logic chọn sao
+                const stars = document.querySelectorAll('#star-rating i');
+                stars.forEach(star => {
+                    star.addEventListener('click', (e) => {
+                        currentRating = parseInt(e.target.dataset.rating);
+                        stars.forEach(s => {
+                            if (parseInt(s.dataset.rating) <= currentRating) {
+                                s.style.color = '#f59e0b';
+                            } else {
+                                s.style.color = 'var(--border-color)';
+                            }
+                        });
+                    });
+                });
+                
+                // Gửi đánh giá
+                document.getElementById('submit-review-btn').addEventListener('click', async () => {
+                    const comment = document.getElementById('review-comment').value;
+                    const msg = document.getElementById('review-msg');
+                    if (!comment) {
+                        msg.innerHTML = '<span style="color: var(--danger-color)">Vui lòng nhập bình luận!</span>';
+                        return;
+                    }
+                    try {
+                        await apiFetch('/reviews', {
+                            method: 'POST',
+                            body: JSON.stringify({ rating: currentRating, comment, courseId })
+                        });
+                        msg.innerHTML = '<span style="color: var(--success-color)">Đã gửi đánh giá thành công!</span>';
+                        document.getElementById('review-comment').value = '';
+                        loadReviews();
+                    } catch (err) {
+                        msg.innerHTML = `<span style="color: var(--danger-color)">${err.message}</span>`;
+                    }
+                });
+            }
         });
     </script>
 </body>

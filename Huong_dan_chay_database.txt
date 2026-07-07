@@ -1,0 +1,48 @@
+=============================================================================
+HƯỚNG DẪN CHẠY DATABASE & SOURCE CODE ĐỒ ÁN
+=============================================================================
+
+Kính gửi Thầy/Cô,
+
+Dự án này sử dụng cơ sở dữ liệu MongoDB Atlas (chạy trực tiếp trên Cloud). 
+Để có thể kết nối vào Database và chạy thử source code trên máy tính của Thầy/Cô, vui lòng thực hiện theo 2 bước dưới đây:
+
+-----------------------------------------------------------------------------
+BƯỚC 1: CẤU HÌNH KẾT NỐI DATABASE VÀ CHẠY BACKEND
+-----------------------------------------------------------------------------
+Vì lý do bảo mật, file cấu hình biến môi trường (.env) không được upload lên mã nguồn. Thầy/Cô vui lòng tạo thủ công file này:
+
+1. Mở thư mục "backend".
+2. Tạo một file mới và đặt tên chính xác là:  .env
+3. Copy và Paste 2 dòng cấu hình dưới đây vào file .env vừa tạo:
+
+MONGO_URI=mongodb+srv://chienshadow1_db_user:JTsOUj41GXUsc1zt@cluster0.a3pcqdp.mongodb.net/course-management?retryWrites=true&w=majority&appName=Cluster0
+JWT_SECRET=123456
+
+4. Lưu file .env lại.
+5. Mở Terminal (Command Prompt) tại thư mục "backend", gõ lần lượt các lệnh sau:
+   - Cài đặt thư viện: npm install
+   - Khởi động máy chủ: node server.js
+   
+   (Nếu Terminal báo "✅ Database connected successfully" và "Server running on port 5000" là đã kết nối Database thành công).
+
+-----------------------------------------------------------------------------
+BƯỚC 2: CHẠY GIAO DIỆN FRONTEND
+-----------------------------------------------------------------------------
+1. Mở thư mục "frontend" bằng phần mềm VS Code.
+2. Cài đặt Extension "Live Server" (nếu VS Code chưa có).
+3. Mở file "index.html", nhấn chuột phải và chọn "Open with Live Server".
+4. Trình duyệt sẽ tự động mở lên giao diện của đồ án.
+
+-----------------------------------------------------------------------------
+TÀI KHOẢN ĐĂNG NHẬP ĐỂ TEST:
+-----------------------------------------------------------------------------
+- Tài khoản Admin (Có toàn quyền xét duyệt, học miễn phí):
+  Email: admin@coursehub.vn
+  Mật khẩu: 123456
+
+- Tài khoản Học viên (Student): (thầy cô có thể tự tạo tài khoản mới nếu muốn)
+  Email: hocvien@gmail.com
+  Mật khẩu: 123456
+
+Em xin chân thành cảm ơn Thầy/Cô!

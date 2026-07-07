@@ -29,6 +29,14 @@ const courseSchema = new mongoose.Schema({
     type: String,
     enum: ['draft', 'published'],
     default: 'published'
+  },
+  averageRating: {
+    type: Number,
+    default: 5.0
+  },
+  reviewCount: {
+    type: Number,
+    default: 0
   }
 }, { timestamps: true });
 
