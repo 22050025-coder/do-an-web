@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadCourses() {
     const courseGrid = document.getElementById('course-grid');
-    
+
     try {
         const data = await apiFetch('/courses');
         const courses = data.data;
@@ -19,14 +19,14 @@ async function loadCourses() {
         courses.forEach(course => {
             const instructorName = course.instructor ? course.instructor.name : 'Chưa có giảng viên';
             const imageUrl = course.imageUrl || 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60';
-            
+
             const courseCard = document.createElement('div');
             courseCard.className = 'course-card';
-            
+
             // Lấy rating thực tế
             const realRating = course.averageRating ? course.averageRating.toFixed(1) : "5.0";
             const reviewCount = course.reviewCount || 0;
-            
+
             // Vẽ số sao (Ví dụ đơn giản: 5 sao tĩnh nếu > 4.5, hoặc có thể vẽ linh động)
             let starsHtml = '';
             for (let i = 1; i <= 5; i++) {
@@ -36,7 +36,7 @@ async function loadCourses() {
                     starsHtml += '<i class="fas fa-star" style="color: var(--border-color);"></i>';
                 }
             }
-            
+
             // Random badge
             const badges = ['<div class="course-badge">🔥 Hot</div>', '<div class="course-badge new">🚀 Mới</div>', ''];
             const randomBadge = badges[Math.floor(Math.random() * badges.length)];
