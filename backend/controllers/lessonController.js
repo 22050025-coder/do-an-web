@@ -50,3 +50,44 @@ export const getLesson = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+// @desc    Cập nhật một bài học
+// @route   PUT /api/lessons/:id
+// @access  Private/Admin
+export const updateLesson = async (req, res) => {
+  try {
+    let lesson = await Lesson.findById(req.params.id);
+
+    if (!lesson) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy bài học' });
+    }
+
+    lesson = await Lesson.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+
+    res.status(200).json({ success: true, data: lesson });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Xóa một bài học
+// @route   DELETE /api/lessons/:id
+// @access  Private/Admin
+export const deleteLesson = async (req, res) => {
+  try {
+    const lesson = await Lesson.findById(req.params.id);
+
+    if (!lesson) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy bài học' });
+    }
+
+    await lesson.deleteOne();
+
+    res.status(200).json({ success: true, data: {} });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
