@@ -2,7 +2,7 @@
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 // URL Backend từ Render 
-const CLOUD_API_URL = 'https://do-an-web-ammr.onrender.com/api';
+const CLOUD_API_URL = 'https://chuyende1.onrender.com/api';
 
 // Cấu hình API URL tự động đảo nguồn
 const CONFIG = {
