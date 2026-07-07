@@ -1,48 +1,65 @@
 =============================================================================
-HƯỚNG DẪN CHẠY DATABASE & SOURCE CODE ĐỒ ÁN
+HƯỚNG DẪN CÀI ĐẶT VÀ CHẠY ĐỒ ÁN TRÊN MÁY TÍNH (LOCAL)
 =============================================================================
 
 Kính gửi Thầy/Cô,
 
-Dự án này sử dụng cơ sở dữ liệu MongoDB Atlas (chạy trực tiếp trên Cloud). 
-Để có thể kết nối vào Database và chạy thử source code trên máy tính của Thầy/Cô, vui lòng thực hiện theo 2 bước dưới đây:
+Đồ án này đã được triển khai online, nhưng nếu Thầy/Cô muốn chạy trực tiếp trên máy tính của mình, vui lòng làm theo 3 bước cực kỳ đơn giản sau đây:
 
 -----------------------------------------------------------------------------
-BƯỚC 1: CẤU HÌNH KẾT NỐI DATABASE VÀ CHẠY BACKEND
+BƯỚC 1: TẠO FILE CẤU HÌNH (.env) CHO BACKEND
 -----------------------------------------------------------------------------
-Vì lý do bảo mật, file cấu hình biến môi trường (.env) không được upload lên mã nguồn. Thầy/Cô vui lòng tạo thủ công file này:
+Vì lý do bảo mật, file cấu hình không được đính kèm sẵn. Thầy/Cô chỉ cần làm như sau:
 
 1. Mở thư mục "backend".
-2. Tạo một file mới và đặt tên chính xác là:  .env
-3. Copy và Paste 2 dòng cấu hình dưới đây vào file .env vừa tạo:
+2. Tạo một file văn bản mới và đặt tên file là: .env
+   (Lưu ý: Chỉ có chữ ".env", không có thêm đuôi .txt hay gì khác).
+3. Mở file .env vừa tạo lên bằng Notepad hoặc VS Code.
+4. Copy toàn bộ đoạn chữ dưới đây và dán vào file .env:
 
-MONGO_URI=mongodb+srv://chienshadow1_db_user:JTsOUj41GXUsc1zt@cluster0.a3pcqdp.mongodb.net/course-management?retryWrites=true&w=majority&appName=Cluster0
-JWT_SECRET=123456
+PORT=5000
+MONGO_URI=mongodb+srv://chienshadow1_db_user:JTsoUj41GXUsclzt@cluster0.a3pcqdp.mongodb.net/course-management?appName=Cluster0
+JWT_SECRET=supersecretkey123
+JWT_EXPIRE=30d
+NODE_ENV=development
 
-4. Lưu file .env lại.
-5. Mở Terminal (Command Prompt) tại thư mục "backend", gõ lần lượt các lệnh sau:
-   - Cài đặt thư viện: npm install
-   - Khởi động máy chủ: node server.js
-   
-   (Nếu Terminal báo "✅ Database connected successfully" và "Server running on port 5000" là đã kết nối Database thành công).
-
------------------------------------------------------------------------------
-BƯỚC 2: CHẠY GIAO DIỆN FRONTEND
------------------------------------------------------------------------------
-1. Mở thư mục "frontend" bằng phần mềm VS Code.
-2. Cài đặt Extension "Live Server" (nếu VS Code chưa có).
-3. Mở file "index.html", nhấn chuột phải và chọn "Open with Live Server".
-4. Trình duyệt sẽ tự động mở lên giao diện của đồ án.
+5. Lưu file .env lại và đóng nó đi.
 
 -----------------------------------------------------------------------------
-TÀI KHOẢN ĐĂNG NHẬP ĐỂ TEST:
+BƯỚC 2: CHẠY MÁY CHỦ (BACKEND)
 -----------------------------------------------------------------------------
-- Tài khoản Admin (Có toàn quyền xét duyệt, học miễn phí):
+1. Mở phần mềm Visual Studio Code (VS Code).
+2. Chọn File -> Open Folder -> Chọn thư mục "backend".
+3. Mở Terminal trong VS Code (Chọn Terminal -> New Terminal trên thanh menu trên cùng).
+4. Trong khung Terminal ở dưới đáy màn hình, gõ dòng chữ sau và nhấn Enter:
+   npm install
+   (Đợi khoảng 30 giây để máy tính tải các thư viện cần thiết về).
+5. Sau khi tải xong, gõ tiếp dòng này và nhấn Enter để chạy server:
+   npm start
+6. Nếu hiện lên dòng chữ "✅ Database connected successfully" là thành công! 
+   (Lưu ý: Giữ nguyên cửa sổ VS Code này, KHÔNG được tắt đi).
+
+-----------------------------------------------------------------------------
+BƯỚC 3: CHẠY GIAO DIỆN (FRONTEND)
+-----------------------------------------------------------------------------
+1. Mở MỘT CỬA SỔ VS Code mới (File -> New Window).
+2. Chọn File -> Open Folder -> Chọn thư mục "frontend".
+3. Tìm phần mở rộng (Extensions) bên thanh menu bên trái, tìm và cài đặt công cụ tên là "Live Server" (nếu chưa cài).
+4. Trong danh sách file bên trái, tìm file "index.html".
+5. Bấm chuột phải vào file "index.html" -> Chọn "Open with Live Server".
+6. Trình duyệt web sẽ tự động mở lên trang web của đồ án.
+
+-----------------------------------------------------------------------------
+TÀI KHOẢN ĐĂNG NHẬP ĐỂ TEST TÍNH NĂNG
+-----------------------------------------------------------------------------
+- Tài khoản Giảng viên / Quản trị viên (Admin):
   Email: admin@coursehub.vn
   Mật khẩu: 123456
 
-- Tài khoản Học viên (Student): (thầy cô có thể tự tạo tài khoản mới nếu muốn)
+- Tài khoản Học viên (Student): 
+  (Thầy/Cô có thể vào trang Đăng ký để tự tạo tài khoản mới nếu muốn)
   Email: hocvien@gmail.com
   Mật khẩu: 123456
 
 Em xin chân thành cảm ơn Thầy/Cô!
+=============================================================================
